@@ -34,6 +34,11 @@ class App extends Component {
       this.setState({count: 0});
       this.setState({guessed: []});
     }
+    if (this.state.count === 12) {
+      this.setState({message: "Congratulations! You won't win a second time"});
+      this.setState({count: 0});
+      this.setState({guessed: []});
+    }
   }
 
 
@@ -41,7 +46,7 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div >
         <Nav 
           message = {this.state.message}
           score = {this.state.count}
