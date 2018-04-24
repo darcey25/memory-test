@@ -12,59 +12,78 @@ class App extends Component {
     count: 0,
     highScore: 0,
     guessed: [],
-    message: "Click a card to begin "
-  }
+    message: "Click a card to begin ",
+    lost: false
+  };
 
   handleClick = id => {
     const guessed = this.state.guessed;
     if (guessed.indexOf(id) === -1) {
       guessed.push(id);
-      this.setState({count: this.state.count + 1});
-      this.setState({message: "Good Guess!"});
       if(this.state.count >= this.state.highScore) {
         this.setState({highScore: this.state.count + 1});
+      }
+      if(this.state.lost) {
+        this.setState({lost: false});
       }
       this.setState({guessed: guessed});
       const shuffled = cards.map((a) => [Math.random(),a]).sort((a,b) => a[0]-b[0]).map((a) => a[1]);
         this.setState({ cards: shuffled });
-
+      this.updateCount();
     }
     else{
-      this.setState({message: "You should play more memory training games! better luck next time!"});
+      this.setState({message: "Keep playing to improve your memory! better luck next time!"});
       this.setState({count: 0});
       this.setState({guessed: []});
+      this.setState({lost: true});
     }
-    if (this.state.count === 12) {
-      this.setState({message: "Congratulations! You won't win a second time"});
-      this.setState({count: 0});
-      this.setState({guessed: []});
-    }
-  }
+  };
 
+  updateCount() {
+    if(this.state.count === 11) {
+      this.win();
+    } else {
+    this.setState({count: this.state.count + 1});
+    this.setState({message: "Good Guess!"});
+    }
+  };
+  
+  win() {
+    console.log("checking to see if i won");
+    console.log(this.state.count);
+      this.setState({message: "Congratulations! Can you win a second time?"});
+      this.setState({count: 0});
+      this.setState({guessed: []});
+  };
 
 
 
   render() {
+    const status = this.state.lost;
     return (
       <div >
         <Nav 
-          message = {this.state.message}
+          message = "Rules: Don't click on the same card twice or you'll loose"
           score = {this.state.count}
           highScore = {this.state.highScore}
         />
-        <h3>Rules: click on a card, don't click on the same one twice or you'll loose</h3>
-        {this.state.cards.map(card => (
+        <div className="main">
+        <p style={status ?  {fontSize: 30, paddingTop: 20, textAlign: "center", color: "rgb(153,3,3)"} : {fontSize: 30, paddingTop: 20, textAlign: "center"}}>{this.state.message}</p>
+        {this.state.cards.map((card, index) => (
             <Card 
-              onClick = {this.handleClick}
+              handleClick = {this.handleClick}
+              key = {index}
               id = {card.id}
+              name = {card.name}
               img = {card.image}
-              picked = {card.picked}
             />
 
           ))}
+        
         <footer className="footer">
           <img src={logo} className="App-logo" alt="logo" />
         </footer>
+        </div>
       </div>
     );
   }
